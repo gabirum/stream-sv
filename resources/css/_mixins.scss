@@ -1,0 +1,20 @@
+@mixin color-by-scheme($light, $dark) {
+  color: $light;
+
+  @media (prefers-color-scheme: dark) {
+    color: $dark;
+  }
+}
+
+@mixin bg-by-scheme($light, $dark) {
+  background-color: $light;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: $dark;
+  }
+}
+
+@mixin colors-by-scheme($light, $dark) {
+  @include color-by-scheme($light, $dark);
+  @include bg-by-scheme($dark, $light);
+}

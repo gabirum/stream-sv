@@ -1,0 +1,62 @@
+@include('partials/document_head')
+
+<main class="sources-container">
+  <h1>Câmeras (RTSP)</h1>
+
+  <p>Adicionar câmera:</p>
+  <form action="{{ route('sources.store') }}" method="POST">
+    {{ csrfField() }}
+
+    <label for="url-input">URL:</label>
+    <input id="url-input" name="url" type="text">
+
+    <button type="submit">Adicionar</button>
+  </form>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Cód.</th>
+          <th>URL</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @each(source in sources)
+          <tr>
+            <td>{{ source.id }}</td>
+            <td>{{ source.url }}</td>
+            <td>
+              <form action="{{ route('sources.destroy', [source.id], { formAction: 'delete' }) }}" method="POST">
+                {{ csrfField() }}
+
+                <button type="submit">Excluir</button>
+              </form>
+            </td>
+          </tr>
+        @else
+          <tr>
+            <td colspan="3">Sem URL's.</td>
+          </tr>
+        @end
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="3">
+            <div class="pagination">
+              <span>Páginas:</span>
+              @each(anchor in sources.getUrlsForRange(1, sources.lastPage))
+                <a href="{{ anchor.url }}">{{ anchor.page }}</a>
+              @end
+            </div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</main>
+
+@include('partials/document_foot')

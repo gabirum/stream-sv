@@ -1,0 +1,25 @@
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 5px;
+  border: 1px solid;
+  border-color: #9b9b9b;
+
+  @media (prefers-color-scheme: dark) {
+    border-color: #f1f1f1;
+  }
+
+  table {
+    min-width: 100%;
+    border-top-width: 2px;
+    border-bottom-width: 0px;
+  }
+}
