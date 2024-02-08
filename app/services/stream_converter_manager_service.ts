@@ -1,39 +1,37 @@
 import app from '@adonisjs/core/services/app'
-import { exec, type ChildProcess } from 'node:child_process'
+import { execFile, type ChildProcess } from 'node:child_process'
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const sanitize = (str: string) => `"${str}"`
-
-const getFFMpegArgs = (input: string, output: string) =>
-  [
-    '-fflags',
-    'nobuffer',
-    '-rtsp_transport',
-    'tcp',
-    'i',
-    sanitize(input),
-    '-copyts',
-    '-c:v',
-    'libx264',
-    '-movflags',
-    'frag_keyframe+empty_moov',
-    '-an',
-    '-f',
-    'hls',
-    '-hls_time',
-    '1',
-    '-hls_list_size',
-    '5',
-    '-hls_segment_type',
-    'mpegts',
-    '-hls_flags',
-    'delete_segments+append_list',
-    sanitize(output),
-  ].join(' ')
+const getFFMpegArgs = (input: string, output: string) => [
+  '-fflags',
+  'nobuffer',
+  '-rtsp_transport',
+  'tcp',
+  '-i',
+  input,
+  '-copyts',
+  '-c:v',
+  'libx264',
+  '-movflags',
+  'frag_keyframe+empty_moov',
+  '-an',
+  '-f',
+  'hls',
+  '-hls_time',
+  '1',
+  '-hls_list_size',
+  '5',
+  '-hls_segment_type',
+  'mpegts',
+  '-hls_flags',
+  'delete_segments+append_list',
+  output,
+]
 
 class StreamConverterProcessHandler {
   private canRestart = true
+  private restartCount = 0
   private process: ChildProcess | null = null
 
   constructor(
@@ -42,18 +40,20 @@ class StreamConverterProcessHandler {
   ) {}
 
   async start() {
+    console.log('starting')
     const outputFolder = app.tmpPath(this.id)
-    await mkdir(outputFolder, { recursive: true }).catch(() => {})
+    await mkdir(outputFolder, { recursive: true }).catch(console.error)
 
     const outputPath = join(outputFolder, 'stream.m3u8')
 
-    this.process = exec(getFFMpegArgs(this.url, outputPath))
+    this.process = execFile('ffmpeg', getFFMpegArgs(this.url, outputPath))
     this.process.once('close', this.onClose.bind(this))
   }
 
   private onClose() {
-    if (this.canRestart) {
-      this.start().catch(() => {})
+    if (this.canRestart && this.restartCount < 3) {
+      this.restartCount++
+      this.start().catch(console.error)
     }
   }
 
@@ -77,7 +77,7 @@ export class StreamConverterManager {
     }
 
     const converter = new StreamConverterProcessHandler(id, url)
-    converter.start().catch(() => {})
+    converter.start().catch(console.error)
     this.registry.set(id, converter)
   }
 

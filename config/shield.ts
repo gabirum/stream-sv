@@ -10,7 +10,8 @@ const shieldConfig = defineConfig({
     enabled: true,
     directives: {
       defaultSrc: ["'self'", '@viteDevUrl'],
-      connectSrc: ['@viteHmrUrl'],
+      mediaSrc: ["'self'", 'blob:'],
+      connectSrc: ["'self'", '@viteHmrUrl'],
     },
     reportOnly: app.inDev,
   },
