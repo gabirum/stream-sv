@@ -47,6 +47,7 @@
     "pino-pretty": "^10.3.1",
     "prettier": "^3.2.4",
     "ts-node": "^10.9.2",
+    "sass": "^1.70.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.12"
   },
@@ -62,8 +63,7 @@
     "better-sqlite3": "^9.4.0",
     "edge.js": "^6.0.1",
     "luxon": "^3.4.4",
-    "reflect-metadata": "^0.2.1",
-    "sass": "^1.70.0"
+    "reflect-metadata": "^0.2.1"
   },
   "eslintConfig": {
     "extends": "@adonisjs/eslint-config/app"

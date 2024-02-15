@@ -15,4 +15,4 @@ const VideosController = () => import('#controllers/videos_controller')
 
 router.resource('sources', SourcesController).only(['index', 'store', 'destroy'])
 router.get('stream/:id/:file', [StreamsController, 'index'])
-router.get('video/:id', [VideosController, 'index'])
+router.get('video/:id', [VideosController, 'index']).as('video')

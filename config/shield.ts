@@ -1,3 +1,4 @@
+import env from '#start/env'
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/shield'
 
@@ -12,6 +13,7 @@ const shieldConfig = defineConfig({
       defaultSrc: ["'self'", '@viteDevUrl'],
       mediaSrc: ["'self'", 'blob:'],
       connectSrc: ["'self'", '@viteHmrUrl'],
+      frameAncestors: [env.get('ANCESTOR_URL')],
     },
     reportOnly: app.inDev,
   },
@@ -33,7 +35,8 @@ const shieldConfig = defineConfig({
    */
   xFrame: {
     enabled: true,
-    action: 'DENY',
+    action: 'ALLOW-FROM',
+    domain: 'http://localhost',
   },
 
   /**

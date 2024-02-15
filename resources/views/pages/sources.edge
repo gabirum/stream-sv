@@ -17,7 +17,7 @@
     <table>
       <thead>
         <tr>
-          <th>Cód.</th>
+          <th>ID</th>
           <th>URL</th>
           <th>Ações</th>
         </tr>
@@ -26,7 +26,9 @@
       <tbody>
         @each(source in sources)
           <tr>
-            <td>{{ source.id }}</td>
+            <td>
+              <a href="{{ route('video', [source.id]) }}" target="_blank">{{ source.id }}</a>
+            </td>
             <td>{{ source.url }}</td>
             <td>
               <form action="{{ route('sources.destroy', [source.id], { formAction: 'delete' }) }}" method="POST">
@@ -57,6 +59,38 @@
       </tfoot>
     </table>
   </div>
+
+  <article>
+    <h2>Como usar:</h2>
+    <p>Pegue o ID da câmera acima e substitua em <code>&lt;ID&gt;</code> abaixo:</p>
+    <br>
+    <code>
+      <pre>&lt;iframe
+  width="500"
+  height="375"
+  src="{{ url }}/video/&lt;ID&gt;"
+  frameborder="0"
+  allow="autoplay"
+  allowfullscreen&gt;
+&lt;/iframe&gt;</pre>
+    </code>
+  </article>
+  <article>
+    <h2>Exemplo:</h2>
+    <p>Tome como exemplo o ID: <code>waopb5n7tu6xgwicnc39zfie</code>.</p>
+    <p>O resultado do código do iframe para colocar no site é:</p>
+    <br>
+    <code>
+      <pre>&lt;iframe
+  width="500"
+  height="375"
+  src="{{ url }}/video/waopb5n7tu6xgwicnc39zfie"
+  frameborder="0"
+  allow="autoplay"
+  allowfullscreen&gt;
+&lt;/iframe&gt;</pre>
+    </code>
+  </article>
 </main>
 
 @include('partials/document_foot')

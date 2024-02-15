@@ -1,5 +1,8 @@
 import Hls from 'hls.js'
 
+import '../css/reset.css'
+import '../css/video.scss'
+
 if (Hls.isSupported()) {
   const videoEl = document.querySelector('video')
   const hls = new Hls()

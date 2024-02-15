@@ -1,16 +1,16 @@
-@mixin color-by-scheme($light, $dark) {
-  color: $light;
+@mixin color-by-scheme($light, $dark, $prop: "color") {
+  #{$prop}: $light;
 
   @media (prefers-color-scheme: dark) {
-    color: $dark;
+    #{$prop}: $dark;
   }
 }
 
-@mixin bg-by-scheme($light, $dark) {
-  background-color: $light;
+@mixin bg-by-scheme($light, $dark, $prop: "background-color") {
+  #{$prop}: $light;
 
   @media (prefers-color-scheme: dark) {
-    background-color: $dark;
+    #{$prop}: $dark;
   }
 }
 

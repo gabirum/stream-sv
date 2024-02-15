@@ -1,3 +1,5 @@
+@use 'mixins';
+
 .sources-container {
   width: 320px;
   margin: 0 auto;
@@ -19,7 +21,19 @@
   }
 
   h1 {
-    font-size: xx-large;
+    font-size: 3rem;
+    line-height: 4rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+    line-height: 2.75rem;
+  }
+
+  pre {
+    overflow-x: auto;
+    overflow-y: hidden;
+    word-wrap: break-word;
   }
 
   form {
@@ -72,7 +86,7 @@
     a:not(:first-of-type)::before {
       content: '|';
       margin-right: .25rem;
-      color: black;
+      @include mixins.color-by-scheme($light: black, $dark: white);
     }
   }
 }

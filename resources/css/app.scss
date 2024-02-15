@@ -1,3 +1,5 @@
+@use 'mixins';
+
 :root {
   color-scheme: light dark;
 }
@@ -7,19 +9,23 @@ body {
   box-sizing: border-box;
 }
 
+button {
+  cursor: pointer;
+}
+
 .table-container {
   overflow-x: auto;
   border-radius: 5px;
   border: 1px solid;
-  border-color: #9b9b9b;
-
-  @media (prefers-color-scheme: dark) {
-    border-color: #f1f1f1;
-  }
+  @include mixins.color-by-scheme($light: #9b9b9b, $dark: #f1f1f1, $prop: "border-color");
 
   table {
     min-width: 100%;
     border-top-width: 2px;
     border-bottom-width: 0px;
   }
+}
+
+code {
+  font-family: 'Courier New', Courier, monospace;
 }

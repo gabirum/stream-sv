@@ -5,6 +5,7 @@ import { createStreamSourceValidator } from '#validators/stream_source'
 import { cuid } from '@adonisjs/core/helpers'
 import NewStreamSource from '#events/new_stream_source'
 import DeleteStreamSource from '#events/delete_stream_source'
+import env from '#start/env'
 
 export default class SourcesController {
   async index({ view, request }: HttpContext) {
@@ -13,7 +14,7 @@ export default class SourcesController {
     const sources = await StreamSource.query().paginate(page, perPage)
     sources.baseUrl('sources')
 
-    return view.render('pages/sources', { sources })
+    return view.render('pages/sources', { sources, app_url: env.get('APP_URL') })
   }
 
   async store({ request, response }: HttpContext) {

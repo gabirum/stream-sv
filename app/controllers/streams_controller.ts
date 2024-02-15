@@ -1,3 +1,4 @@
+import env from '#start/env'
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import { access, constants, readFile } from 'node:fs/promises'
@@ -19,6 +20,7 @@ export default class StreamsController {
     if (path.endsWith('.m3u8')) {
       const content = await readFile(path, 'utf-8')
 
+      const appUrl = env.get('APP_URL')
       return content
         .split('\n')
         .map((line) => {
@@ -26,7 +28,7 @@ export default class StreamsController {
             return line
           }
 
-          return `http://localhost:3333/stream/${params.id}/${line}`
+          return `${appUrl}/stream/${params.id}/${line}`
         })
         .join('\n')
     }

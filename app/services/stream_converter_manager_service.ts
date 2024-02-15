@@ -40,7 +40,6 @@ class StreamConverterProcessHandler {
   ) {}
 
   async start() {
-    console.log('starting')
     const outputFolder = app.tmpPath(this.id)
     await mkdir(outputFolder, { recursive: true }).catch(console.error)
 
@@ -100,5 +99,6 @@ export class StreamConverterManager {
     this.registry.forEach((c) => {
       c.stop()
     })
+    this.registry.clear()
   }
 }
