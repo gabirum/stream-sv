@@ -1,4 +1,8 @@
 FROM node:lts-slim AS base
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ffmpeg \
+  && apt-get purge -y --auto-remove \
+  && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /home/node/app && chown node:node /home/node/app
 WORKDIR /home/node/app
 USER node
