@@ -62,7 +62,7 @@ class StreamConverterProcessHandler {
   }
 }
 
-interface ConverterConfig {
+export interface ConverterConfig {
   id: string
   url: string
 }

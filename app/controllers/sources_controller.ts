@@ -20,8 +20,10 @@ export default class SourcesController {
   async store({ request, response }: HttpContext) {
     const { url } = await request.validateUsing(createStreamSourceValidator)
 
-    const streamSource = await StreamSource.create({ id: cuid(), url })
-    await NewStreamSource.dispatch(streamSource)
+    const sourceId = cuid()
+    const data = { id: sourceId, url }
+    await StreamSource.create(data)
+    await NewStreamSource.dispatch({ id: sourceId, url })
 
     response.redirect().toRoute('sources.index')
   }
