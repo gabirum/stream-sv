@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 
 export default class StreamSource extends BaseModel {
-  @column({ isPrimary: true })
+  @column()
   declare id: string
 
   @column()

@@ -31,7 +31,7 @@
             </td>
             <td>{{ source.url }}</td>
             <td>
-              <form action="{{ route('sources.destroy', [source.id], { formAction: 'delete' }) }}" method="POST">
+              <form action="{{ route('sources.destroy', [source.id], { qs: { _method: 'delete' } }) }}" method="POST">
                 {{ csrfField() }}
 
                 <button type="submit">Excluir</button>
