@@ -13,6 +13,10 @@ const getFFMpegArgs = (input: string, output: string) => [
   '-copyts',
   '-c:v',
   'libx264',
+  '-profile:v',
+  'baseline',
+  '-tune',
+  'zerolatency',
   '-movflags',
   'frag_keyframe+empty_moov',
   '-an',
@@ -32,7 +36,7 @@ const getFFMpegArgs = (input: string, output: string) => [
 class StreamConverterProcessHandler {
   private canRestart = true
   private restartCount = 0
-  private timeoutId: NodeJS.Timeout | null = null
+  private restartTimeout: NodeJS.Timeout | null = null
   private resetCountTimeout: NodeJS.Timeout | null = null
   private process: ChildProcess | null = null
 
@@ -53,7 +57,7 @@ class StreamConverterProcessHandler {
         () => {
           this.restartCount = 0
 
-          clearTimeout(this.resetCountTimeout!)
+          if (this.resetCountTimeout) clearTimeout(this.resetCountTimeout)
           this.resetCountTimeout = null
         },
         5 * 60 * 1000
@@ -63,21 +67,19 @@ class StreamConverterProcessHandler {
   }
 
   private onClose() {
-    if (this.resetCountTimeout) {
-      clearTimeout(this.resetCountTimeout)
-      this.resetCountTimeout = null
-    }
+    if (this.resetCountTimeout) clearTimeout(this.resetCountTimeout)
+    this.resetCountTimeout = null
 
     if (!this.canRestart) return
 
     const time = Math.min(1000 * 2 ** this.restartCount, 10 * 60 * 1000) // max each 10 min
 
-    this.timeoutId = setTimeout(() => {
+    this.restartTimeout = setTimeout(() => {
       this.restartCount++
       this.start().catch(console.error)
 
-      clearTimeout(this.timeoutId!)
-      this.timeoutId = null
+      if (this.restartTimeout) clearTimeout(this.restartTimeout)
+      this.restartTimeout = null
     }, time)
   }
 
