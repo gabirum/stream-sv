@@ -54,7 +54,7 @@
 
   tbody {
     tr:not(:first-of-type) {
-      margin-top: 1px solid;
+      border-top: 1px solid;
     }
 
     td[colspan] {
