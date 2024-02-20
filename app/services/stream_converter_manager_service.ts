@@ -32,6 +32,8 @@ const getFFMpegArgs = (input: string, output: string) => [
 class StreamConverterProcessHandler {
   private canRestart = true
   private restartCount = 0
+  private timeoutId: NodeJS.Timeout | null = null
+  private resetCountTimeout: NodeJS.Timeout | null = null
   private process: ChildProcess | null = null
 
   constructor(
@@ -46,14 +48,37 @@ class StreamConverterProcessHandler {
     const outputPath = join(outputFolder, 'stream.m3u8')
 
     this.process = execFile('ffmpeg', getFFMpegArgs(this.url, outputPath))
+    this.process.once('spawn', () => {
+      this.resetCountTimeout = setTimeout(
+        () => {
+          this.restartCount = 0
+
+          clearTimeout(this.resetCountTimeout!)
+          this.resetCountTimeout = null
+        },
+        5 * 60 * 1000
+      )
+    })
     this.process.once('close', this.onClose.bind(this))
   }
 
   private onClose() {
-    if (this.canRestart && this.restartCount < 3) {
+    if (this.resetCountTimeout) {
+      clearTimeout(this.resetCountTimeout)
+      this.resetCountTimeout = null
+    }
+
+    if (!this.canRestart) return
+
+    const time = Math.min(1000 * 2 ** this.restartCount, 10 * 60 * 1000) // max each 10 min
+
+    this.timeoutId = setTimeout(() => {
       this.restartCount++
       this.start().catch(console.error)
-    }
+
+      clearTimeout(this.timeoutId!)
+      this.timeoutId = null
+    }, time)
   }
 
   stop() {
