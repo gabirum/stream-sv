@@ -8,7 +8,9 @@
 
   @vite(['resources/js/video.js'])
 
-  <script>var streamLink = "{{ link }}";</script>
+  <script nonce="{{ cspNonce }}">
+    var streamLink = "{{ link }}";
+  </script>
 </head>
 
 <body>

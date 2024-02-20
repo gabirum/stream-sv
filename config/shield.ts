@@ -10,7 +10,7 @@ const shieldConfig = defineConfig({
   csp: {
     enabled: true,
     directives: {
-      defaultSrc: ["'self'", '@viteDevUrl'],
+      defaultSrc: ["'self'", '@nonce', '@viteDevUrl'],
       mediaSrc: ["'self'", 'blob:'],
       connectSrc: ["'self'", '@viteHmrUrl'],
       frameAncestors: [env.get('ANCESTOR_URL')],
@@ -36,7 +36,7 @@ const shieldConfig = defineConfig({
   xFrame: {
     enabled: true,
     action: 'ALLOW-FROM',
-    domain: 'http://localhost',
+    domain: env.get('ANCESTOR_URL'),
   },
 
   /**
