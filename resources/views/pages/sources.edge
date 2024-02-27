@@ -13,6 +13,12 @@
     <button type="submit">Adicionar</button>
   </form>
 
+  <form action="{{ route('sources.restart_all') }}" method="POST">
+    {{ csrfField() }}
+
+    <button type="submit">Reiniciar todos</button>
+  </form>
+
   <div class="table-container">
     <table>
       <thead>
@@ -31,6 +37,11 @@
             </td>
             <td>{{ source.url }}</td>
             <td>
+              <form action="{{ route('sources.restart') }}" method="POST">
+                {{ csrfField() }}
+
+                <button type="submit">Reiniciar</button>
+              </form>
               <form action="{{ route('sources.destroy', [source.id], { qs: { _method: 'delete' } }) }}" method="POST">
                 {{ csrfField() }}
 

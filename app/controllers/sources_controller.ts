@@ -6,6 +6,8 @@ import { cuid } from '@adonisjs/core/helpers'
 import NewStreamSource from '#events/new_stream_source'
 import DeleteStreamSource from '#events/delete_stream_source'
 import env from '#start/env'
+import RestartConverter from '#events/restart_converter'
+import RestartAllConverters from '#events/restart_all_converters'
 
 export default class SourcesController {
   async index({ view, request }: HttpContext) {
@@ -32,6 +34,20 @@ export default class SourcesController {
 
     await source.delete()
     await DeleteStreamSource.dispatch(source.id)
+
+    response.redirect().toRoute('sources.index')
+  }
+
+  async restart({ params, response }: HttpContext) {
+    const source = await StreamSource.findOrFail(params.id)
+
+    await RestartConverter.dispatch(source.id)
+
+    response.redirect().toRoute('sources.index')
+  }
+
+  async restartAll({ response }: HttpContext) {
+    await RestartAllConverters.dispatch()
 
     response.redirect().toRoute('sources.index')
   }

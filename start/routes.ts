@@ -14,5 +14,7 @@ const StreamsController = () => import('#controllers/streams_controller')
 const VideosController = () => import('#controllers/videos_controller')
 
 router.resource('sources', SourcesController).only(['index', 'store', 'destroy'])
+router.post('sources/restart', [SourcesController, 'restart']).as('sources.restart')
+router.post('sources/restart-all', [SourcesController, 'restartAll']).as('sources.restart_all')
 router.get('stream/:id/:file', [StreamsController, 'index'])
 router.get('video/:id', [VideosController, 'index']).as('video')

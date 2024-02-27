@@ -4,12 +4,10 @@ import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const getFFMpegArgs = (input: string, output: string) => [
-  '-fflags',
-  'nobuffer',
-  '-rtsp_transport',
-  'tcp',
   '-i',
   input,
+  '-rtsp_transport',
+  'tcp',
   '-copyts',
   '-c:v',
   'libx264',
@@ -22,8 +20,6 @@ const getFFMpegArgs = (input: string, output: string) => [
   '-an',
   '-f',
   'hls',
-  '-hls_time',
-  '1',
   '-hls_list_size',
   '5',
   '-hls_segment_type',
@@ -52,18 +48,20 @@ class StreamConverterProcessHandler {
     const outputPath = join(outputFolder, 'stream.m3u8')
 
     this.process = execFile('ffmpeg', getFFMpegArgs(this.url, outputPath))
-    this.process.once('spawn', () => {
-      this.resetCountTimeout = setTimeout(
-        () => {
-          this.restartCount = 0
-
-          if (this.resetCountTimeout) clearTimeout(this.resetCountTimeout)
-          this.resetCountTimeout = null
-        },
-        5 * 60 * 1000
-      )
-    })
+    this.process.once('spawn', this.onSpawn.bind(this))
     this.process.once('close', this.onClose.bind(this))
+  }
+
+  private onSpawn() {
+    this.resetCountTimeout = setTimeout(
+      () => {
+        this.restartCount = 0
+
+        if (this.resetCountTimeout) clearTimeout(this.resetCountTimeout)
+        this.resetCountTimeout = null
+      },
+      5 * 60 * 1000 // 5 minutes to reset count
+    )
   }
 
   private onClose() {
@@ -81,6 +79,13 @@ class StreamConverterProcessHandler {
       if (this.restartTimeout) clearTimeout(this.restartTimeout)
       this.restartTimeout = null
     }, time)
+  }
+
+  restart() {
+    this.canRestart = false
+    this.restartCount = 0
+    this.process?.kill()
+    this.start().catch(console.error)
   }
 
   stop() {
@@ -109,6 +114,21 @@ export class StreamConverterManager {
 
   addMany(configs: ConverterConfig[]) {
     configs.forEach(this.add.bind(this))
+  }
+
+  restart(id: string) {
+    if (!this.registry.has(id)) {
+      return
+    }
+
+    const converter = this.registry.get(id)!
+    converter.restart()
+  }
+
+  restartAll() {
+    this.registry.forEach((c) => {
+      c.restart()
+    })
   }
 
   drop(id: string) {
