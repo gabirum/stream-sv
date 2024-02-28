@@ -1,4 +1,5 @@
 import app from '@adonisjs/core/services/app'
+import logger from '@adonisjs/core/services/logger'
 import { execFile, type ChildProcess } from 'node:child_process'
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -32,6 +33,10 @@ const getFFMpegArgs = (input: string, output: string) => [
   output,
 ]
 
+const logError = (error: unknown) => {
+  logger.error(error, 'Error ffmpeg')
+}
+
 class StreamConverterProcessHandler {
   private canRestart = true
   private restartCount = 0
@@ -46,7 +51,7 @@ class StreamConverterProcessHandler {
 
   async start() {
     const outputFolder = app.tmpPath(this.id)
-    await mkdir(outputFolder, { recursive: true }).catch(console.error)
+    await mkdir(outputFolder, { recursive: true }).catch(logError)
 
     const outputPath = join(outputFolder, 'stream.m3u8')
 
@@ -68,8 +73,6 @@ class StreamConverterProcessHandler {
   }
 
   private onClose() {
-    this.process?.off('message', () => {})
-
     if (this.resetCountTimeout) clearTimeout(this.resetCountTimeout)
     this.resetCountTimeout = null
 
@@ -79,17 +82,20 @@ class StreamConverterProcessHandler {
 
     this.restartTimeout = setTimeout(() => {
       this.restartCount++
-      this.start().catch(console.error)
+      this.start().catch(logError)
 
       if (this.restartTimeout) clearTimeout(this.restartTimeout)
       this.restartTimeout = null
     }, time)
+    this.process = null
   }
 
   restart() {
-    this.canRestart = true
+    this.canRestart = false
     this.restartCount = 0
-    this.process?.kill()
+    if (!this.process?.kill()) {
+      this.start().catch(logError)
+    }
   }
 
   stop() {
@@ -112,7 +118,7 @@ export class StreamConverterManager {
     }
 
     const converter = new StreamConverterProcessHandler(id, url)
-    converter.start().catch(console.error)
+    void converter.start()
     this.registry.set(id, converter)
   }
 
