@@ -4,15 +4,18 @@ import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const getFFMpegArgs = (input: string, output: string) => [
-  '-i',
-  input,
+  '-hide_banner',
+  '-loglevel',
+  'warning',
   '-rtsp_transport',
   'tcp',
+  '-i',
+  input,
+  '-vsync',
+  '0',
   '-copyts',
   '-c:v',
-  'libx264',
-  '-profile:v',
-  'baseline',
+  'copy',
   '-tune',
   'zerolatency',
   '-movflags',
@@ -65,6 +68,8 @@ class StreamConverterProcessHandler {
   }
 
   private onClose() {
+    this.process?.off('message', () => {})
+
     if (this.resetCountTimeout) clearTimeout(this.resetCountTimeout)
     this.resetCountTimeout = null
 
@@ -82,10 +87,9 @@ class StreamConverterProcessHandler {
   }
 
   restart() {
-    this.canRestart = false
+    this.canRestart = true
     this.restartCount = 0
     this.process?.kill()
-    this.start().catch(console.error)
   }
 
   stop() {

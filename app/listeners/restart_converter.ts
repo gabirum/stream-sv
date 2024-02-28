@@ -1,5 +1,5 @@
 import type RestartConverterEvent from '#events/restart_converter'
-import { type StreamConverterManager } from '#services/stream_converter_manager_service'
+import { StreamConverterManager } from '#services/stream_converter_manager_service'
 import { inject } from '@adonisjs/core'
 
 @inject()

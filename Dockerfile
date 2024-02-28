@@ -1,17 +1,18 @@
-FROM node:lts-slim AS base
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends ffmpeg \
-  && apt-get purge -y --auto-remove \
-  && rm -rf /var/lib/apt/lists/*
+FROM node:lts-alpine AS base
+RUN apk update
+RUN apk upgrade
+RUN apk add --no-cache ffmpeg
 RUN mkdir -p /home/node/app && chown node:node /home/node/app
 WORKDIR /home/node/app
 USER node
 RUN mkdir tmp
 
-FROM base AS build
+FROM base AS dependencies
 COPY --chown=node:node ./package*.json ./
 RUN npm i
 COPY --chown=node:node . .
+
+FROM dependencies AS build
 RUN node ace build
 
 FROM base AS production
