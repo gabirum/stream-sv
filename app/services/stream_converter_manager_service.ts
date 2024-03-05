@@ -9,7 +9,7 @@ const getFFMpegArgs = (input: string, output: string) => [
   '-loglevel',
   'warning',
   '-rtsp_transport',
-  'tcp',
+  'udp',
   '-i',
   input,
   '-vsync',
@@ -56,6 +56,12 @@ class StreamConverterProcessHandler {
     const outputPath = join(outputFolder, 'stream.m3u8')
 
     this.process = execFile('ffmpeg', getFFMpegArgs(this.url, outputPath))
+    this.process.stdout?.on('data', (data) => {
+      logger.info(data.toString())
+    })
+    this.process.stderr?.on('data', (data) => {
+      logger.error(data.toString())
+    })
     this.process.once('spawn', this.onSpawn.bind(this))
     this.process.once('close', this.onClose.bind(this))
   }
@@ -73,12 +79,15 @@ class StreamConverterProcessHandler {
   }
 
   private onClose() {
+    this.process?.stdout?.removeAllListeners('data')
+    this.process?.stderr?.removeAllListeners('data')
+
     if (this.resetCountTimeout) clearTimeout(this.resetCountTimeout)
     this.resetCountTimeout = null
 
     if (!this.canRestart) return
 
-    const time = Math.min(1000 * 2 ** this.restartCount, 10 * 60 * 1000) // max each 10 min
+    const time = Math.min(1000 * 2 ** this.restartCount, 60 * 1000) // max each 30 sec
 
     this.restartTimeout = setTimeout(() => {
       this.restartCount++
