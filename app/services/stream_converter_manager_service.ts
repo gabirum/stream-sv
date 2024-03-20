@@ -12,8 +12,6 @@ const getFFMpegArgs = (input: string, output: string) => [
   'udp',
   '-i',
   input,
-  '-vsync',
-  '0',
   '-copyts',
   '-c:v',
   'copy',

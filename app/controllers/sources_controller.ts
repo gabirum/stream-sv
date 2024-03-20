@@ -29,6 +29,25 @@ export default class SourcesController {
     response.redirect().toRoute('sources.index')
   }
 
+  async edit({ view, params }: HttpContext) {
+    const source = await StreamSource.findOrFail(params.id)
+
+    return view.render('pages/edit_sources', { source })
+  }
+
+  async update({ request, response, params }: HttpContext) {
+    const source = await StreamSource.findOrFail(params.id)
+    const { url } = await request.validateUsing(createStreamSourceValidator)
+
+    source.merge({ url })
+    await source.save()
+    await source.refresh()
+    await DeleteStreamSource.dispatch(source.id)
+    await NewStreamSource.dispatch(source)
+
+    response.redirect().toRoute('sources.index')
+  }
+
   async destroy({ params, response }: HttpContext) {
     const source = await StreamSource.findOrFail(params.id)
 

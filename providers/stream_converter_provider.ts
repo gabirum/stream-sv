@@ -8,9 +8,10 @@ export default class StreamConverterProvider {
    * Register bindings to the container
    */
   register() {
-    this.app.container.singleton('stream_converter_manager', () => {
+    this.app.container.singleton(StreamConverterManager, () => {
       return new StreamConverterManager()
     })
+    this.app.container.alias('stream_converter_manager', StreamConverterManager)
   }
 
   /**

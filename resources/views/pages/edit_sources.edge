@@ -1,0 +1,18 @@
+@include('partials/document_head')
+
+<main class="edit-container">
+  <h1>Editar: {{ source.id }}</h1>
+
+  <a href="{{ route('sources.index') }}">Voltar</a>
+
+  <form action="{{ route('sources.update', [source.id], { qs: { _method: 'PATCH' } }) }}" method="POST">
+    {{ csrfField() }}
+
+    <label for="url-input">URL:</label>
+    <input id="url-input" name="url" type="text" autofocus autocomplete="url" value="{{ source.url }}">
+
+    <button type="submit">Atualizar</button>
+  </form>
+</main>
+
+@include('partials/document_foot')

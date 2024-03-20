@@ -8,7 +8,7 @@
     {{ csrfField() }}
 
     <label for="url-input">URL:</label>
-    <input id="url-input" name="url" type="text">
+    <input id="url-input" name="url" type="text" autocomplete="url" required>
 
     <button type="submit">Adicionar</button>
   </form>
@@ -36,7 +36,8 @@
               <a href="{{ route('video', [source.id]) }}" target="_blank">{{ source.id }}</a>
             </td>
             <td>{{ source.url }}</td>
-            <td>
+            <td class="actions">
+              <a href="{{ route('sources.edit', [source.id]) }}">Editar</a>
               <form action="{{ route('sources.restart', [source.id]) }}" method="POST">
                 {{ csrfField() }}
 

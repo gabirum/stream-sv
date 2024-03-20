@@ -66,6 +66,10 @@
     border-top: 1px solid;
   }
 
+  td {
+    font-size: 1rem;
+  }
+
   th,
   td {
     padding: .25rem .5rem;
@@ -73,6 +77,12 @@
 
   th {
     font-weight: 600;
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
   }
 
   .pagination {
