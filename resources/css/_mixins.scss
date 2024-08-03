@@ -8,5 +8,5 @@
 
 @mixin colors-by-scheme($light, $dark) {
   @include color-by-scheme($light, $dark);
-  @include bg-by-scheme($dark, $light, "background-color");
+  @include color-by-scheme($dark, $light, "background-color");
 }
