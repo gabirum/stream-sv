@@ -85,7 +85,7 @@ class StreamConverterProcessHandler {
 
     if (!this.canRestart) return
 
-    const time = Math.min(1000 * 2 ** this.restartCount, 60 * 1000) // max each 30 sec
+    const time = Math.min(1000 * 2 ** this.restartCount, 60 * 1000) // max each 60 sec
 
     this.restartTimeout = setTimeout(() => {
       this.restartCount++
