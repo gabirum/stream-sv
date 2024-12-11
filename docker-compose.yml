@@ -10,5 +10,5 @@ services:
     ports:
       - ${PORT}:${PORT}
     volumes:
-      - ./tmp:/home/node/app/tmp
+      - ./tmp:/srv/app/tmp
     restart: always

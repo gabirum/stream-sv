@@ -12,6 +12,8 @@ const getFFMpegArgs = (input: string, output: string) => [
   'warning',
   '-rtsp_transport',
   'udp',
+  '-i',
+  input,
   '-copyts',
   '-c:v',
   'libx264',
@@ -28,8 +30,6 @@ const getFFMpegArgs = (input: string, output: string) => [
   'mpegts',
   '-hls_flags',
   'delete_segments+append_list',
-  '-i',
-  input,
   output,
 ]
 
