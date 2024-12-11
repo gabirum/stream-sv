@@ -16,7 +16,7 @@ const getFFMpegArgs = (input: string, output: string) => [
   input,
   '-copyts',
   '-c:v',
-  'libx264',
+  'copy',
   '-tune',
   'zerolatency',
   '-movflags',
