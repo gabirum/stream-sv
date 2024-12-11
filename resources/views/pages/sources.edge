@@ -7,6 +7,9 @@
   <form action="{{ route('sources.store') }}" method="POST">
     {{ csrfField() }}
 
+    <label for="name-input">Nome:</label>
+    <input id="name-input" name="name" type="text" required>
+
     <label for="url-input">URL:</label>
     <input id="url-input" name="url" type="text" autocomplete="url" required>
 
@@ -24,6 +27,7 @@
       <thead>
         <tr>
           <th>ID</th>
+          <th>Nome</th>
           <th>URL</th>
           <th>Ações</th>
         </tr>
@@ -35,6 +39,7 @@
             <td>
               <a href="{{ route('video', [source.id]) }}" target="_blank">{{ source.id }}</a>
             </td>
+            <td>{{ source.name }}</td>
             <td>{{ source.url }}</td>
             <td class="actions">
               <a href="{{ route('sources.edit', [source.id]) }}">Editar</a>
@@ -52,14 +57,14 @@
           </tr>
         @else
           <tr>
-            <td colspan="3">Sem URL's.</td>
+            <td colspan="4">Sem URL's.</td>
           </tr>
         @end
       </tbody>
 
       <tfoot>
         <tr>
-          <td colspan="3">
+          <td colspan="4">
             <div class="pagination">
               <span>Páginas:</span>
               @each(anchor in sources.getUrlsForRange(1, sources.lastPage))
@@ -80,7 +85,7 @@
       <pre>&lt;iframe
   width="500"
   height="375"
-  src="{{ app_url }}/video/&lt;ID&gt;"
+  src="{{ appUrl }}/video/&lt;ID&gt;"
   frameborder="0"
   allow="autoplay"
   allowfullscreen&gt;
@@ -96,7 +101,7 @@
       <pre>&lt;iframe
   width="500"
   height="375"
-  src="{{ app_url }}/video/waopb5n7tu6xgwicnc39zfie"
+  src="{{ appUrl }}/video/waopb5n7tu6xgwicnc39zfie"
   frameborder="0"
   allow="autoplay"
   allowfullscreen&gt;

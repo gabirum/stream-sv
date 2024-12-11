@@ -8,6 +8,8 @@ const safeAccess = (path: string) =>
     .then(() => true)
     .catch(() => false)
 
+const APP_URL = env.get('APP_URL')
+
 export default class StreamsController {
   async index({ params, response }: HttpContext) {
     const path = app.tmpPath(params.id, params.file)
@@ -20,7 +22,6 @@ export default class StreamsController {
     if (path.endsWith('.m3u8')) {
       const content = await readFile(path, 'utf-8')
 
-      const appUrl = env.get('APP_URL')
       return content
         .split('\n')
         .map((line) => {
@@ -28,7 +29,7 @@ export default class StreamsController {
             return line
           }
 
-          return `${appUrl}/stream/${params.id}/${line}`
+          return `${APP_URL}/stream/${params.id}/${line}`
         })
         .join('\n')
     }

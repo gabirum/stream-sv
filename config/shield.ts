@@ -10,9 +10,9 @@ const shieldConfig = defineConfig({
   csp: {
     enabled: true,
     directives: {
-      defaultSrc: ["'self'", '@nonce', '@viteDevUrl'],
+      defaultSrc: ["'self'", '@nonce'],
       mediaSrc: ["'self'", 'blob:'],
-      connectSrc: ["'self'", '@viteHmrUrl'],
+      connectSrc: ["'self'"],
       frameAncestors: [env.get('ANCESTOR_URL')],
     },
     reportOnly: app.inDev,

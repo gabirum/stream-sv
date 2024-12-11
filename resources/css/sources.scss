@@ -36,15 +36,16 @@
     word-wrap: break-word;
   }
 
-  form {
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    align-items: center;
-    gap: .75rem;
+  > form {
+    display: block;
 
     input {
       width: 100%;
+    }
+
+    button {
+      margin-top: .5em;
+      float: right;
     }
   }
 

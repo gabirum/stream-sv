@@ -5,16 +5,16 @@ import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const getFFMpegArgs = (input: string, output: string) => [
+  '-fflags',
+  'nobuffer',
   '-hide_banner',
   '-loglevel',
   'warning',
   '-rtsp_transport',
   'udp',
-  '-i',
-  input,
   '-copyts',
   '-c:v',
-  'copy',
+  'libx264',
   '-tune',
   'zerolatency',
   '-movflags',
@@ -28,11 +28,13 @@ const getFFMpegArgs = (input: string, output: string) => [
   'mpegts',
   '-hls_flags',
   'delete_segments+append_list',
+  '-i',
+  input,
   output,
 ]
 
 const logError = (error: unknown) => {
-  logger.error(error, 'Error ffmpeg')
+  logger.warn(error, 'Error ffmpeg')
 }
 
 class StreamConverterProcessHandler {
@@ -53,18 +55,14 @@ class StreamConverterProcessHandler {
 
     const outputPath = join(outputFolder, 'stream.m3u8')
 
+    logger.info(`Starting convertion of ${this.id}`)
     this.process = execFile('ffmpeg', getFFMpegArgs(this.url, outputPath))
-    this.process.stdout?.on('data', (data) => {
-      logger.info(data.toString())
-    })
-    this.process.stderr?.on('data', (data) => {
-      logger.error(data.toString())
-    })
     this.process.once('spawn', this.onSpawn.bind(this))
     this.process.once('close', this.onClose.bind(this))
   }
 
   private onSpawn() {
+    logger.info(`Converter for ${this.id} started`)
     this.resetCountTimeout = setTimeout(
       () => {
         this.restartCount = 0
@@ -77,9 +75,7 @@ class StreamConverterProcessHandler {
   }
 
   private onClose() {
-    this.process?.stdout?.removeAllListeners('data')
-    this.process?.stderr?.removeAllListeners('data')
-
+    logger.info(`Converter for ${this.id} died`)
     if (this.resetCountTimeout) clearTimeout(this.resetCountTimeout)
     this.resetCountTimeout = null
 
@@ -98,6 +94,7 @@ class StreamConverterProcessHandler {
   }
 
   restart() {
+    logger.info(`Restarting converter for ${this.id}`)
     this.canRestart = false
     this.restartCount = 0
     if (!this.process?.kill()) {
@@ -106,6 +103,7 @@ class StreamConverterProcessHandler {
   }
 
   stop() {
+    logger.info(`Stopping converter for ${this.id}`)
     this.canRestart = false
     this.process?.kill()
   }

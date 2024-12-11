@@ -6,6 +6,9 @@ export default class StreamSource extends BaseModel {
   declare id: string
 
   @column()
+  declare name: string
+
+  @column()
   declare url: string
 
   @column.dateTime({ autoCreate: true })

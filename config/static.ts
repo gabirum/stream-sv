@@ -1,3 +1,4 @@
+import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/static'
 
 /**
@@ -12,6 +13,9 @@ const staticServerConfig = defineConfig({
   etag: true,
   lastModified: true,
   dotFiles: 'ignore',
+  immutable: app.inProduction,
+  maxAge: app.inProduction ? '365d' : 0,
+  cacheControl: true,
 })
 
 export default staticServerConfig

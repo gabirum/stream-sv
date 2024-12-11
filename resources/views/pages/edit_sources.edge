@@ -8,8 +8,11 @@
   <form action="{{ route('sources.update', [source.id], { qs: { _method: 'PATCH' } }) }}" method="POST">
     {{ csrfField() }}
 
+    <label for="name-input">Nome:</label>
+    <input id="name-input" name="name" type="text" autofocus value="{{ source.name }}">
+
     <label for="url-input">URL:</label>
-    <input id="url-input" name="url" type="text" autofocus autocomplete="url" value="{{ source.url }}">
+    <input id="url-input" name="url" type="text" autocomplete="url" value="{{ source.url }}">
 
     <button type="submit">Atualizar</button>
   </form>
