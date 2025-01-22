@@ -7,11 +7,9 @@ USER node
 RUN mkdir tmp
 COPY --chown=node:node ./package*.json .
 
-FROM base AS dependencies
+FROM base AS build
 RUN npm i
 COPY --chown=node:node . .
-
-FROM dependencies AS build
 RUN node ace build
 
 FROM base AS production

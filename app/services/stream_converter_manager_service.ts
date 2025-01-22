@@ -9,7 +9,7 @@ const getFFMpegArgs = (input: string, output: string) => [
   'nobuffer',
   '-hide_banner',
   '-loglevel',
-  'warning',
+  'error',
   '-rtsp_transport',
   'udp',
   '-i',
@@ -33,15 +33,9 @@ const getFFMpegArgs = (input: string, output: string) => [
   output,
 ]
 
-const logError = (error: unknown) => {
-  logger.warn(error, 'Error ffmpeg')
-}
-
 class StreamConverterProcessHandler {
   private canRestart = true
-  private restartCount = 0
   private restartTimeout: NodeJS.Timeout | null = null
-  private resetCountTimeout: NodeJS.Timeout | null = null
   private process: ChildProcess | null = null
 
   constructor(
@@ -51,59 +45,57 @@ class StreamConverterProcessHandler {
 
   async start() {
     const outputFolder = app.tmpPath(this.id)
-    await mkdir(outputFolder, { recursive: true }).catch(logError)
+    await mkdir(outputFolder, { recursive: true }).catch(() => {})
 
     const outputPath = join(outputFolder, 'stream.m3u8')
 
     logger.info(`Starting convertion of ${this.id}`)
     this.process = execFile('ffmpeg', getFFMpegArgs(this.url, outputPath))
+    this.process.stdout?.on('data', (data) => {
+      logger.info('ffmpeg data %s: %s', this.id, data.toString())
+    })
+    this.process.stderr?.on('data', (data) => {
+      logger.warn('ffmpeg error %s: %s', this.id, data.toString())
+    })
     this.process.once('spawn', this.onSpawn.bind(this))
     this.process.once('close', this.onClose.bind(this))
   }
 
   private onSpawn() {
-    logger.info(`Converter for ${this.id} started`)
-    this.resetCountTimeout = setTimeout(
-      () => {
-        this.restartCount = 0
-
-        if (this.resetCountTimeout) clearTimeout(this.resetCountTimeout)
-        this.resetCountTimeout = null
-      },
-      5 * 60 * 1000 // 5 minutes to reset count
-    )
+    this.canRestart = true
+    logger.info('ffmpeg for %s started', this.id)
   }
 
   private onClose() {
-    logger.info(`Converter for ${this.id} died`)
-    if (this.resetCountTimeout) clearTimeout(this.resetCountTimeout)
-    this.resetCountTimeout = null
+    logger.info('ffmpeg for %s died', this.id)
 
-    if (!this.canRestart) return
+    this.process?.stdout?.removeAllListeners('data')
+    this.process?.stderr?.removeAllListeners('data')
 
-    const time = Math.min(1000 * 2 ** this.restartCount, 60 * 1000) // max each 60 sec
+    if (!this.canRestart) {
+      return
+    }
 
     this.restartTimeout = setTimeout(() => {
-      this.restartCount++
-      this.start().catch(logError)
+      logger.info('Restarting ffmpeg for %s', this.id)
+      this.start().catch((e) => logger.warn(e, 'Error while starting ffmpeg for %s', this.id))
 
       if (this.restartTimeout) clearTimeout(this.restartTimeout)
       this.restartTimeout = null
-    }, time)
+    }, 1000)
     this.process = null
   }
 
   restart() {
-    logger.info(`Restarting converter for ${this.id}`)
+    logger.info('Restarting ffmpeg for %s', this.id)
     this.canRestart = false
-    this.restartCount = 0
     if (!this.process?.kill()) {
-      this.start().catch(logError)
+      this.start().catch((e) => logger.warn(e, 'Error while starting ffmpeg for %s', this.id))
     }
   }
 
   stop() {
-    logger.info(`Stopping converter for ${this.id}`)
+    logger.info('Stopping ffmpeg for %s', this.id)
     this.canRestart = false
     this.process?.kill()
   }

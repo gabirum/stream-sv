@@ -59,16 +59,18 @@ export default class SourcesController {
     response.redirect().toRoute('sources.index')
   }
 
-  async restart({ params, response }: HttpContext) {
+  async restart({ params, response, logger }: HttpContext) {
     const source = await StreamSource.findOrFail(params.id)
 
     await RestartConverter.dispatch(source.id)
+    logger.info('requested restart ffmpeg process of %d', source.id)
 
     response.redirect().toRoute('sources.index')
   }
 
-  async restartAll({ response }: HttpContext) {
+  async restartAll({ response, logger }: HttpContext) {
     await RestartAllConverters.dispatch()
+    logger.info('requested restart all ffmpeg process')
 
     response.redirect().toRoute('sources.index')
   }
