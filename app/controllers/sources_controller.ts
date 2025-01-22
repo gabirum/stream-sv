@@ -63,7 +63,7 @@ export default class SourcesController {
     const source = await StreamSource.findOrFail(params.id)
 
     await RestartConverter.dispatch(source.id)
-    logger.info('requested restart ffmpeg process of %d', source.id)
+    logger.info('requested restart ffmpeg process of %s', source.id)
 
     response.redirect().toRoute('sources.index')
   }

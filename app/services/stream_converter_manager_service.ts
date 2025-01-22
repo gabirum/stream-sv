@@ -49,7 +49,7 @@ class StreamConverterProcessHandler {
 
     const outputPath = join(outputFolder, 'stream.m3u8')
 
-    logger.info(`Starting convertion of ${this.id}`)
+    logger.info('Starting ffmpeg of %s', this.id)
     this.process = execFile('ffmpeg', getFFMpegArgs(this.url, outputPath))
     this.process.stdout?.on('data', (data) => {
       logger.info('ffmpeg data %s: %s', this.id, data.toString())
@@ -89,9 +89,8 @@ class StreamConverterProcessHandler {
   restart() {
     logger.info('Restarting ffmpeg for %s', this.id)
     this.canRestart = false
-    if (!this.process?.kill()) {
-      this.start().catch((e) => logger.warn(e, 'Error while starting ffmpeg for %s', this.id))
-    }
+    this.process?.kill('SIGKILL')
+    this.start().catch((e) => logger.warn(e, 'Error while starting ffmpeg for %s', this.id))
   }
 
   stop() {
